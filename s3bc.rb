@@ -1,5 +1,5 @@
 require 'aws-sdk'
-
+s3 = Aws::S3::Resource.new(region: 'ap-northeast-2')
 NO_SUCH_BUCKET = "The bucket '%s' does not exist!"
 
 USAGE = <<DOC
@@ -16,6 +16,9 @@ Where:
 
       file_name   is the name of the file to upload,
                   required when operation is 'upload'
+
+
+      all_bucket_list List all buckets. 
 DOC
 
 #Set the name of the bucket on which the operations are performed
@@ -26,6 +29,14 @@ if ARGV.length > 0
   bucket_name = ARGV[0]
 else
   puts USAGE
+  s3.buckets.limit(50).each do |b|
+   puts "#{b.name}"
+   #s3_client.delete_bucket(bucket: 'b')
+   #b.clear!
+   #b.delete
+   #puts "#{b.name} deleted"
+   #end
+  end
   exit 1
 end
 
@@ -40,6 +51,7 @@ file = ARGV[2] if (ARGV.length > 2)
 # Get an Amazon S3 resource
 s3 = Aws::S3::Resource.new(region: 'ap-northeast-2')
 
+all_s3b=s3.buckets
 # Get the bucket by name
 bucket = s3.bucket(bucket_name)
 
@@ -86,11 +98,20 @@ when 'list'
     NO_SUCH_BUCKET % bucket_name
   end
 
+when 'all_bucket_list'
+   #s3.buckets.limit(50).each do |b|
+   #puts "#{b.name}"
+   puts all_s3b
+   #s3_client.delete_bucket(bucket: 'b')
+   #b.clear!
+   #b.delete
+   #puts "#{b.name} deleted"
+   #end
 else
   puts "Unkonwn operation: '%s'!" % operation
   puts USAGE
 end
 
 
-s3 = Aws::S3::Resource.new(region: 'ap-northeast-2')
+#s3 = Aws::S3::Resource.new(region: 'ap-northeast-2')
 
